@@ -13,7 +13,7 @@ set(CMAKE_MODULE_PATH
 find_package(OpenCL REQUIRED)
 find_package(Threads REQUIRED)
 
-set(Sources matmul.cpp)
+set(Sources iris.cpp)
 
 add_executable(${PROJECT_NAME}
   ${Sources}
