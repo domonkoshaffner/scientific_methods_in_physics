@@ -113,7 +113,6 @@ vector<T> train_test_split(vector<T> data, int remainder)
             train_test_vector.push_back(data[i]);
         }
     }
-
     return(train_test_vector);
 }
 
@@ -132,7 +131,7 @@ int class_prediction(vector<double> X, vector<double> weights)
     // Multiplying the flower properties with the weights
     for(int i = 0; i < X.size(); i++)
     {
-        classification += X[i]*weights[i+1]
+        classification += X[i]*weights[i+1];
     }
 
     // Returning with the value 1 - first class - if the classification value is above 0
@@ -151,6 +150,95 @@ int class_prediction(vector<double> X, vector<double> weights)
 
 //################################################
 
+// Function for modifying the weights and bias according to the learning rate and epoch number
+// First four inputs are the four properties
+// The fifth input is the flower type vector
+// The sixth input is the epoch number
+// The seventh input is the learning rate
+// The output vector is the weight vector, where the first element is the bias
+
+vector<double> fitting_function(vector<double> a_train, vector<double> b_train, vector<double> c_train, vector<double> d_train, vector<int> y_train, int epochs, double learning_rate)
+{
+    // Creating a vector for the weight and for the four flower properties
+    vector<double> weights(5, 0.0);
+    vector<double> x_train(4);
+
+    // Creating a variable for the preceptor 
+    double prec;
+
+    // Iterating through the epochs
+    for(int i = 0; i <= epochs; i++)
+    {
+        // Iterating through the data
+        for(int j = 0; j < a_train.size(); j++)
+        {
+            // Selecting the flower properties
+            // Pushing them to the x_train vector
+            x_train[0] = a_train[i];
+            x_train[1] = b_train[i];
+            x_train[2] = c_train[i];
+            x_train[3] = d_train[i];            
+
+            // Calculating the current preceptor value
+            // Dot product of the four properties and weights, then adding the bias
+            // The result is 1 or -1 depending on the type, subtracting this from the true value
+            // Multiplying this with the learning_rate
+            prec = learning_rate * (y_train[j] - class_prediction(x_train, weights));
+
+            // Iterating through the weights and multiplying the preceptor result with the properties
+            // Updating the weights
+            for(int k = 1; k < weights.size(); k++)
+            {
+                weights[k] += prec * x_train[k-1];
+            }
+
+            // Updating the bias
+            weights[0] = prec;
+        }
+    }
+
+    // Returning the weights
+    return weights;
+}
+
+//################################################
+
+// Predicting the classes based on the test dataset
+
+void test_predict(vector<double> a_test, vector<double> b_test, vector<double> c_test, vector<double> d_test, vector<int> y_test, vector<double> weights, int epochs)
+{
+    vector<double> x_test(4);
+    vector<int> class_result_vec(a_test.size());
+    int correct_values = 0;
+    int incorrect_values = 0;
+    int accuracy = 0;
+
+    for(int i = 0; i < a_test.size(); i++)
+    {
+        x_test[0] = a_test[i];
+        x_test[1] = b_test[i];
+        x_test[2] = c_test[i];
+        x_test[3] = d_test[i];
+
+        class_result_vec[i] = class_prediction(x_test, weights);
+
+        if(class_result_vec[i] == y_test[i])
+        {
+            correct_values += 1;
+        }
+        
+        else
+        {
+            incorrect_values += 0;
+        }
+    }
+
+    accuracy = correct_values / (correct_values + incorrect_values) * 100;
+
+    cout << "\nThe prediction after " << epochs << " iterations is " << accuracy << "% accurate.\n";
+}
+
+//################################################
 int main()
 {  
     // Reading in the different properties of the flowers
@@ -163,15 +251,15 @@ int main()
     vector<int> y = reading_iris_y("C:/Users/haffn/Desktop/Adattud/iris/data/y.txt");
 
     // Splitting the properties into training and testing data
-    vector<double> a_train = train_test_split(a, 0);
-    vector<double> b_train = train_test_split(b, 0);
-    vector<double> c_train = train_test_split(c, 0);
-    vector<double> d_train = train_test_split(d, 0);
+    vector<double> a_train = train_test_split(a, 1);
+    vector<double> b_train = train_test_split(b, 1);
+    vector<double> c_train = train_test_split(c, 1);
+    vector<double> d_train = train_test_split(d, 1);
 
-    vector<double> a_test = train_test_split(a, 1);
-    vector<double> b_test = train_test_split(b, 1);
-    vector<double> c_test = train_test_split(c, 1);
-    vector<double> d_test = train_test_split(d, 1);
+    vector<double> a_test = train_test_split(a, 0);
+    vector<double> b_test = train_test_split(b, 0);
+    vector<double> c_test = train_test_split(c, 0);
+    vector<double> d_test = train_test_split(d, 0);
 
     // Splitting the classification values into training and testing data
     vector<int> y_train = train_test_split(y, 0);
@@ -180,18 +268,22 @@ int main()
     // Checking the vectors as the output
     //vec_print(y_train);
 
+    // Creating the epochs variable
+    int epochs = 0;
 
-    // Creating the X values vector
-    vector<double> x_train(4);
+    // Creating the learning rate variable
+    double learning_rate = 0.01;
 
-    // Filling up the vector with the appropriate values
-    // Calling the functions for the prediction
-    for(int i = 0; i < a_train.size(); i++)
-    {
-        x_train[0] = a_train[i];
-        x_train[1] = b_train[i];
-        x_train[2] = c_train[i];
-        x_train[3] = d_train[i];
-    }
+    // Calling the fitting function
+    vector<double> weights = fitting_function(a_train, b_train, c_train, d_train, y_train, epochs, learning_rate);
+
+    // Printing the weights
+    //vec_print(weights);
+    
+    // Predicting the classes based on the test dataset
+    test_predict(a_test, b_test, c_test, d_test, y_test, weights, epochs);
+
+    // Printing the y_train values
+    vec_print(y_train);
 
 }
