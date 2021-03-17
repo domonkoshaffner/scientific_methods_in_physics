@@ -1,15 +1,7 @@
-//#include <chrono>
-//#include <numeric>
 #include <iterator>
-
 #include <vector>       // std::vector
-//#include <exception>    // std::runtime_error, std::exception
 #include <iostream>     // std::cout
 #include <fstream>      // std::ifstream
-//#include <random>       // std::default_random_engine, std::uniform_real_distribution
-//#include <algorithm>    // std::transform
-//#include <cstdlib>      // EXIT_FAILURE
-//#include <iomanip>
 
 using namespace std;
 
@@ -174,10 +166,10 @@ vector<double> fitting_function(vector<double> a_train, vector<double> b_train, 
         {
             // Selecting the flower properties
             // Pushing them to the x_train vector
-            x_train[0] = a_train[i];
-            x_train[1] = b_train[i];
-            x_train[2] = c_train[i];
-            x_train[3] = d_train[i];            
+            x_train[0] = a_train[j];
+            x_train[1] = b_train[j];
+            x_train[2] = c_train[j];
+            x_train[3] = d_train[j];            
 
             // Calculating the current preceptor value
             // Dot product of the four properties and weights, then adding the bias
@@ -204,15 +196,24 @@ vector<double> fitting_function(vector<double> a_train, vector<double> b_train, 
 //################################################
 
 // Predicting the classes based on the test dataset
+//The first four inputs are the testing datasets
+// The fifth input is the testing classification values
+// The sixth input is the weights vector
+// The seveth input is the epoch number
+// The function calculates the prediction values and outputs the accuracy of the preceptor model
 
-void test_predict(vector<double> a_test, vector<double> b_test, vector<double> c_test, vector<double> d_test, vector<int> y_test, vector<double> weights, int epochs)
+void test_predict(vector<double> a_test, vector<double> b_test, vector<double> c_test, vector<double> d_test, vector<int> y_test, vector<double> weights, int epochs, double learning_rate)
 {
+    // Creating the combined four property- and the calles results vector 
     vector<double> x_test(4);
     vector<int> class_result_vec(a_test.size());
-    int correct_values = 0;
-    int incorrect_values = 0;
-    int accuracy = 0;
 
+    // Initialising some variables for the accuracy measure
+    double correct_values = 0.0;
+    double incorrect_values = 0.0;
+    double accuracy;
+
+    // Iterating through the data and collecting the test values in the x_test vector
     for(int i = 0; i < a_test.size(); i++)
     {
         x_test[0] = a_test[i];
@@ -220,22 +221,27 @@ void test_predict(vector<double> a_test, vector<double> b_test, vector<double> c
         x_test[2] = c_test[i];
         x_test[3] = d_test[i];
 
+        // Predicting the results of the model
         class_result_vec[i] = class_prediction(x_test, weights);
 
+        // If the prediction result matches the testing result, the correct_values variable is increased by one
         if(class_result_vec[i] == y_test[i])
         {
             correct_values += 1;
         }
-        
+
+        // If the prediction result doesn't match the testing result, the correct_values variable is increased by one      
         else
         {
-            incorrect_values += 0;
+            incorrect_values += 1;
         }
     }
 
+    // Calculating the accuracy 
     accuracy = correct_values / (correct_values + incorrect_values) * 100;
 
-    cout << "\nThe prediction after " << epochs << " iterations is " << accuracy << "% accurate.\n";
+    // Outputting the results
+    cout << "\nThe prediction after " << epochs << " iteration(s), with a learning rate of " << learning_rate <<" is " << accuracy << "% accurate.\n";
 }
 
 //################################################
@@ -251,15 +257,15 @@ int main()
     vector<int> y = reading_iris_y("C:/Users/haffn/Desktop/Adattud/iris/data/y.txt");
 
     // Splitting the properties into training and testing data
-    vector<double> a_train = train_test_split(a, 1);
-    vector<double> b_train = train_test_split(b, 1);
-    vector<double> c_train = train_test_split(c, 1);
-    vector<double> d_train = train_test_split(d, 1);
+    vector<double> a_train = train_test_split(a, 0);
+    vector<double> b_train = train_test_split(b, 0);
+    vector<double> c_train = train_test_split(c, 0);
+    vector<double> d_train = train_test_split(d, 0);
 
-    vector<double> a_test = train_test_split(a, 0);
-    vector<double> b_test = train_test_split(b, 0);
-    vector<double> c_test = train_test_split(c, 0);
-    vector<double> d_test = train_test_split(d, 0);
+    vector<double> a_test = train_test_split(a, 1);
+    vector<double> b_test = train_test_split(b, 1);
+    vector<double> c_test = train_test_split(c, 1);
+    vector<double> d_test = train_test_split(d, 1);
 
     // Splitting the classification values into training and testing data
     vector<int> y_train = train_test_split(y, 0);
@@ -269,21 +275,34 @@ int main()
     //vec_print(y_train);
 
     // Creating the epochs variable
-    int epochs = 0;
+    int epochs = 1;
+
+    // Cheking if the epoch is a valid number
+    if(epochs <= 0)
+    {
+        cout << "\nPlease enter a valid epoch number!\n";
+        exit(1);
+    }
 
     // Creating the learning rate variable
-    double learning_rate = 0.01;
+    double learning_rate = 0.0001;
+
+    // Cheking if the learning rate is a valid number
+    if(learning_rate <= 0)
+    {
+        cout << "\nPlease enter a valid learning rate!\n";
+        exit(1);
+    }
 
     // Calling the fitting function
     vector<double> weights = fitting_function(a_train, b_train, c_train, d_train, y_train, epochs, learning_rate);
 
     // Printing the weights
     //vec_print(weights);
-    
-    // Predicting the classes based on the test dataset
-    test_predict(a_test, b_test, c_test, d_test, y_test, weights, epochs);
 
     // Printing the y_train values
-    vec_print(y_train);
-
+    //vec_print(y_train);
+    
+    // Predicting the classes based on the test dataset
+    test_predict(a_test, b_test, c_test, d_test, y_test, weights, epochs, learning_rate);
 }
