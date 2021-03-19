@@ -133,7 +133,7 @@ int class_prediction(vector<double> X, vector<double> weights)
     }
 
     // Returning with the value -1 - second class - if the classification value is below 0
-    else if(classification < 0)
+    else
     {
         return -1;
     }
@@ -185,7 +185,7 @@ vector<double> fitting_function(vector<double> a_train, vector<double> b_train, 
             }
 
             // Updating the bias
-            weights[0] = prec;
+            weights[0] += prec;
         }
     }
 
@@ -275,7 +275,7 @@ int main()
     //vec_print(y_train);
 
     // Creating the epochs variable
-    int epochs = 1;
+    int epochs = 2;
 
     // Cheking if the epoch is a valid number
     if(epochs <= 0)
@@ -298,7 +298,7 @@ int main()
     vector<double> weights = fitting_function(a_train, b_train, c_train, d_train, y_train, epochs, learning_rate);
 
     // Printing the weights
-    //vec_print(weights);
+    vec_print(weights);
 
     // Printing the y_train values
     //vec_print(y_train);
