@@ -7,7 +7,7 @@ using namespace std;
 
 //################################################
 
-// Function for reading in the flowers properties
+// Function for reading in the flowers' properties
 // The input is the location of the data set
 // The output is the property vector 
 
