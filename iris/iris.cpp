@@ -2,12 +2,13 @@
 #include <vector>       // std::vector
 #include <iostream>     // std::cout
 #include <fstream>      // std::ifstream
+#include <random>
 
 using namespace std;
 
 //################################################
 
-// Function for reading in the flowers' properties
+// Function for reading in the flowers properties
 // The input is the location of the data set
 // The output is the property vector 
 
@@ -61,9 +62,13 @@ vector<int> reading_iris_y(string input)
         {
             y.push_back(-1);
         }
-        else
+        else if (values == "Iris-versicolor")
         {
-            y.push_back(1);
+            y.push_back(-1);
+        }
+        else if (values == "Iris-virginica")
+        {
+            y.push_back(0);
         }
     }
 
@@ -88,25 +93,118 @@ void vec_print(vector<T> data)
 //################################################
 
 // Function for splitting the data set into testing- and training data sets
-// The splitting is by the parity 
-// The first input is the data to be splitted
-// The second input is the remainder - if it's 0, the even-, if it's 1, the odd numbers are saved
-// The output is either the training- or the testing data set
+// Using Mersenne Twister pseudo-random number generator
+// Using 20% of the data set as training data
+// Returning the indices of the training data
 
-template <class T>
-vector<T> train_test_split(vector<T> data, int remainder)
+vector<int> test_generator()
 {
-    vector<T> train_test_vector;
+    // Random seed
+    random_device rd;
 
-    for(int i = 0; i < data.size(); i++)
+    // Initialize the pseudo-random number generator
+    mt19937 gen(rd());
+
+    // Generate pseudo-random numbers
+    // Uniformly distributed in range (1, 150)
+    uniform_int_distribution<> dis1(0, 49);
+    uniform_int_distribution<> dis2(0, 99);
+    uniform_int_distribution<> dis3(0, 149);
+
+    // Creating array for the indices
+    vector<int> indices_test;
+
+    // Generate ten pseudo-random numbers
+    // I'm using 80% training and 20% testing data
+    while (indices_test.size() < 10)
     {
-        if(i%2 == remainder)
-        {
-            train_test_vector.push_back(data[i]);
+        int rand_num = dis1(gen);
+        bool exists = find(begin(indices_test), end(indices_test), rand_num) != end(indices_test);
+
+        if(exists == false){
+            indices_test.push_back(rand_num);
         }
     }
-    return(train_test_vector);
+
+    while (indices_test.size() < 20)
+    {
+        int rand_num = dis2(gen);
+        bool exists = find(begin(indices_test), end(indices_test), rand_num) != end(indices_test);
+
+        if(exists == false){
+            indices_test.push_back(rand_num);
+        }
+    }
+
+    while (indices_test.size() < 30)
+    {
+        int rand_num = dis3(gen);
+        bool exists = find(begin(indices_test), end(indices_test), rand_num) != end(indices_test);
+
+        if(exists == false){
+            indices_test.push_back(rand_num);
+        }
+    }
+
+    // Returning with the test vector
+    return(indices_test);
 }
+
+//################################################
+
+// Function for creating the test data set
+// The input is a vector of the indices of the testing data set
+// The otput is the training data set's indices
+
+vector<int> train_generator(vector<int> indices_test)
+{
+    // Creating array for the indices
+    vector<int> indices_train;
+
+    // Starting index
+    int i = 0;
+
+    //Iterating through the vector
+    //Filling up the vector with elements if they are not in indices_test
+    while(i < 150)
+    {
+        bool exists = find(begin(indices_test), end(indices_test), i) != end(indices_test);
+
+        if(exists == false)
+        {
+            indices_train.push_back(i);
+        }
+
+        i += 1;
+    }
+
+    // Returning with the train vector
+    return(indices_train);
+}
+
+//################################################
+
+// Function for splitting the data set into training and testing sets according to the indices
+// Input is the vector of indices and the data to be split
+// Output is the split data set
+
+template <class T>
+vector<T> data_split(vector<T> data, vector<int> indices)
+{
+
+    // Creating the new vector
+    vector<T> split_data;
+
+    // Iterating through the data
+    for(int i = 0; i < indices.size(); i++)
+    {
+        split_data.push_back(data[indices[i]]);
+    }
+
+    // Returning with the split vector
+    return(split_data);
+}
+
 
 //################################################
 
@@ -126,14 +224,20 @@ int class_prediction(vector<double> X, vector<double> weights)
         classification += X[i]*weights[i+1];
     }
 
-    // Returning with the value 1 - first class - if the classification value is above 0
-    if(classification > 0)
+    // Returning with the value 1 - first class - if the classification value is above 0.5
+    if(classification > 0.5)
     {
         return 1;
     }
 
-    // Returning with the value -1 - second class - if the classification value is below 0
-    else
+    // Returning with the value 0 - second class - if the classification value is between -0.5 and 0.5
+    else if(classification > -0.5 && classification <= 0.5)
+    {
+        return 0;
+    }
+
+    // Returning with the value -1 - third class - if the classification value is below -0.5
+    else if(classification <= 0.5)
     {
         return -1;
     }
@@ -245,37 +349,37 @@ void test_predict(vector<double> a_test, vector<double> b_test, vector<double> c
 }
 
 //################################################
+
 int main()
 {  
     // Reading in the different properties of the flowers
-    vector<double> a = reading_iris_values("C:/Users/haffn/Desktop/Adattud/iris/data/a.txt");
-    vector<double> b = reading_iris_values("C:/Users/haffn/Desktop/Adattud/iris/data/b.txt");
-    vector<double> c = reading_iris_values("C:/Users/haffn/Desktop/Adattud/iris/data/c.txt");
-    vector<double> d = reading_iris_values("C:/Users/haffn/Desktop/Adattud/iris/data/d.txt");
+    vector<double> a = reading_iris_values("C:/All Files/MSc-IV/Adattud/iris/data/a_all.data");
+    vector<double> b = reading_iris_values("C:/All Files/MSc-IV/Adattud/iris/data/b_all.data");
+    vector<double> c = reading_iris_values("C:/All Files/MSc-IV/Adattud/iris/data/c_all.data");
+    vector<double> d = reading_iris_values("C:/All Files/MSc-IV/Adattud/iris/data/d_all.data");
 
     // Reading in the classification values of the flowers
-    vector<int> y = reading_iris_y("C:/Users/haffn/Desktop/Adattud/iris/data/y.txt");
+    vector<int> y = reading_iris_y("C:/All Files/MSc-IV/Adattud/iris/data/iris.data");
 
-    // Splitting the properties into training and testing data
-    vector<double> a_train = train_test_split(a, 0);
-    vector<double> b_train = train_test_split(b, 0);
-    vector<double> c_train = train_test_split(c, 0);
-    vector<double> d_train = train_test_split(d, 0);
+    // Calling the test- and train generation function sand returning the indices of the data sets
+    vector<int> indices_test = test_generator();
+    vector<int> indices_train = train_generator(indices_test);
 
-    vector<double> a_test = train_test_split(a, 1);
-    vector<double> b_test = train_test_split(b, 1);
-    vector<double> c_test = train_test_split(c, 1);
-    vector<double> d_test = train_test_split(d, 1);
+    //Calling the data splitting function to categorise the data sets into testing and training data sets
+    vector<double> a_test = data_split(a, indices_test);
+    vector<double> a_train = data_split(a, indices_train);
+    vector<double> b_test = data_split(b, indices_test);
+    vector<double> b_train = data_split(b, indices_train);
+    vector<double> c_test = data_split(c, indices_test);
+    vector<double> c_train = data_split(c, indices_train);
+    vector<double> d_test = data_split(d, indices_test);
+    vector<double> d_train = data_split(d, indices_train);
+    vector<int> y_test = data_split(y, indices_test);
+    vector<int> y_train = data_split(y, indices_train);
 
-    // Splitting the classification values into training and testing data
-    vector<int> y_train = train_test_split(y, 0);
-    vector<int> y_test = train_test_split(y, 1);
-
-    // Checking the vectors as the output
-    //vec_print(y_train);
 
     // Creating the epochs variable
-    int epochs = 2;
+    int epochs = 50;
 
     // Cheking if the epoch is a valid number
     if(epochs <= 0)
@@ -285,7 +389,7 @@ int main()
     }
 
     // Creating the learning rate variable
-    double learning_rate = 0.0001;
+    double learning_rate = 0.1;
 
     // Cheking if the learning rate is a valid number
     if(learning_rate <= 0)
@@ -293,6 +397,7 @@ int main()
         cout << "\nPlease enter a valid learning rate!\n";
         exit(1);
     }
+
 
     // Calling the fitting function
     vector<double> weights = fitting_function(a_train, b_train, c_train, d_train, y_train, epochs, learning_rate);
@@ -305,4 +410,7 @@ int main()
     
     // Predicting the classes based on the test dataset
     test_predict(a_test, b_test, c_test, d_test, y_test, weights, epochs, learning_rate);
+
+    
+
 }
