@@ -246,59 +246,6 @@ int class_prediction(vector<double> X, vector<double> weights)
 
 //################################################
 
-// Function for modifying the weights and bias according to the learning rate and epoch number
-// First four inputs are the four properties
-// The fifth input is the flower type vector
-// The sixth input is the epoch number
-// The seventh input is the learning rate
-// The output vector is the weight vector, where the first element is the bias
-
-vector<double> fitting_function(vector<double> a_train, vector<double> b_train, vector<double> c_train, vector<double> d_train, vector<int> y_train, int epochs, double learning_rate)
-{
-    // Creating a vector for the weight and for the four flower properties
-    vector<double> weights(5, 0.0);
-    vector<double> x_train(4);
-
-    // Creating a variable for the preceptor 
-    double prec;
-
-    // Iterating through the epochs
-    for(int i = 0; i <= epochs; i++)
-    {
-        // Iterating through the data
-        for(int j = 0; j < a_train.size(); j++)
-        {
-            // Selecting the flower properties
-            // Pushing them to the x_train vector
-            x_train[0] = a_train[j];
-            x_train[1] = b_train[j];
-            x_train[2] = c_train[j];
-            x_train[3] = d_train[j];            
-
-            // Calculating the current preceptor value
-            // Dot product of the four properties and weights, then adding the bias
-            // The result is 1 or -1 depending on the type, subtracting this from the true value
-            // Multiplying this with the learning_rate
-            prec = learning_rate * (y_train[j] - class_prediction(x_train, weights));
-
-            // Iterating through the weights and multiplying the preceptor result with the properties
-            // Updating the weights
-            for(int k = 1; k < weights.size(); k++)
-            {
-                weights[k] += prec * x_train[k-1];
-            }
-
-            // Updating the bias
-            weights[0] += prec;
-        }
-    }
-
-    // Returning the weights
-    return weights;
-}
-
-//################################################
-
 // Predicting the classes based on the test dataset
 //The first four inputs are the testing datasets
 // The fifth input is the testing classification values
@@ -306,7 +253,7 @@ vector<double> fitting_function(vector<double> a_train, vector<double> b_train, 
 // The seveth input is the epoch number
 // The function calculates the prediction values and outputs the accuracy of the preceptor model
 
-void test_predict(vector<double> a_test, vector<double> b_test, vector<double> c_test, vector<double> d_test, vector<int> y_test, vector<double> weights, int epochs, double learning_rate)
+double test_predict(vector<double> a_test, vector<double> b_test, vector<double> c_test, vector<double> d_test, vector<int> y_test, vector<double> weights)
 {
     // Creating the combined four property- and the calles results vector 
     vector<double> x_test(4);
@@ -344,11 +291,73 @@ void test_predict(vector<double> a_test, vector<double> b_test, vector<double> c
     // Calculating the accuracy 
     accuracy = correct_values / (correct_values + incorrect_values) * 100;
 
-    // Outputting the results
-    cout << "\nThe prediction after " << epochs << " iteration(s), with a learning rate of " << learning_rate <<" is " << accuracy << "% accurate.\n";
+    return accuracy;
+
+}
+
+
+//################################################
+
+// Function for modifying the weights and bias according to the learning rate and epoch number
+// First four inputs are the four properties
+// The fifth input is the flower type vector
+// The sixth input is the epoch number
+// The seventh input is the learning rate
+// The output vector is the weight vector, where the first element is the bias
+
+vector<double> fitting_function(vector<double> a_train, vector<double> b_train, vector<double> c_train, vector<double> d_train, vector<double> a_test, vector<double> b_test, vector<double> c_test, vector<double> d_test, vector<int> y_train, vector<int> y_test, int epochs, double learning_rate)
+{
+    // Creating a vector for the weight and for the four flower properties
+    vector<double> weights(5, 0.0);
+    vector<double> x_train(4);
+
+    // Creating variables for measuring the accuracy
+    double accuracy;
+    vector<double> accuracy_vec;
+
+    // Creating a variable for the preceptor 
+    double prec;
+
+    // Iterating through the epochs
+    for(int i = 0; i <= epochs; i++)
+    {
+        // Iterating through the data
+        for(int j = 0; j < a_train.size(); j++)
+        {
+            // Selecting the flower properties
+            // Pushing them to the x_train vector
+            x_train[0] = a_train[j];
+            x_train[1] = b_train[j];
+            x_train[2] = c_train[j];
+            x_train[3] = d_train[j];            
+
+            // Calculating the current preceptor value
+            // Dot product of the four properties and weights, then adding the bias
+            // The result is 1 or -1 depending on the type, subtracting this from the true value
+            // Multiplying this with the learning_rate
+            prec = learning_rate * (y_train[j] - class_prediction(x_train, weights));
+
+            // Iterating through the weights and multiplying the preceptor result with the properties
+            // Updating the weights
+            for(int k = 1; k < weights.size(); k++)
+            {
+                weights[k] += prec * x_train[k-1];
+            }
+
+            // Updating the bias
+            weights[0] += prec;
+        }
+
+        accuracy = test_predict(a_test, b_test, c_test, d_test, y_test, weights);
+        accuracy_vec.push_back(accuracy);
+    }
+
+    // Returning the weights
+    return accuracy_vec;
 }
 
 //################################################
+
 
 int main()
 {  
@@ -379,7 +388,7 @@ int main()
 
 
     // Creating the epochs variable
-    int epochs = 50;
+    int epochs = 100;
 
     // Cheking if the epoch is a valid number
     if(epochs <= 0)
@@ -389,7 +398,7 @@ int main()
     }
 
     // Creating the learning rate variable
-    double learning_rate = 0.1;
+    double learning_rate = 0.01;
 
     // Cheking if the learning rate is a valid number
     if(learning_rate <= 0)
@@ -400,17 +409,16 @@ int main()
 
 
     // Calling the fitting function
-    vector<double> weights = fitting_function(a_train, b_train, c_train, d_train, y_train, epochs, learning_rate);
+    vector<double> accuracy = fitting_function(a_train, b_train, c_train, d_train, a_test, b_test, c_test, d_test, y_train, y_test, epochs, learning_rate);
 
-    // Printing the weights
-    vec_print(weights);
+    // Outputting the results
+    //cout << "\nThe prediction after " << epochs << " iteration(s), with a learning rate of " << learning_rate <<" is " << accuracy[epochs-1] << "% accurate.\n";
 
-    // Printing the y_train values
-    //vec_print(y_train);
-    
-    // Predicting the classes based on the test dataset
-    test_predict(a_test, b_test, c_test, d_test, y_test, weights, epochs, learning_rate);
+    // Printing the accuracy vector
+    //vec_print(accuracy);
 
-    
+    // Writing the vector into a txt file 
+    std::ofstream outFile("C:/All Files/MSc-IV/Adattud/iris/accuracy_vector.txt");
+    for (const auto &e : accuracy) outFile << e << "\n";
 
 }
