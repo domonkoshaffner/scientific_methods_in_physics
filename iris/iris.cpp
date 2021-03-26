@@ -26,9 +26,7 @@ vector<double> reading_iris_values(string input)
 	}
 
 	while (inFile >> x)
-	{
-        data.push_back(x);		
-	}
+	{data.push_back(x);}
 
 	inFile.close();
 	return data;
@@ -59,17 +57,11 @@ vector<int> reading_iris_y(string input)
     while(inFile >> values)
     {
         if (values == "Iris-setosa")
-        {
-            y.push_back(-1);
-        }
+        {y.push_back(-1);}
         else if (values == "Iris-versicolor")
-        {
-            y.push_back(-1);
-        }
+        {y.push_back(-1);}
         else if (values == "Iris-virginica")
-        {
-            y.push_back(0);
-        }
+        {y.push_back(0);}
     }
 
     inFile.close();
@@ -85,9 +77,7 @@ template <class T>
 void vec_print(vector<T> data)
 {
     for(int i = 0; i < data.size(); i++)
-    {
-        cout << data[i] << ", ";
-    }
+    {cout << data[i] << ", ";}
 }
 
 //################################################
@@ -121,9 +111,8 @@ vector<int> test_generator()
         int rand_num = dis1(gen);
         bool exists = find(begin(indices_test), end(indices_test), rand_num) != end(indices_test);
 
-        if(exists == false){
-            indices_test.push_back(rand_num);
-        }
+        if(exists == false)
+        {indices_test.push_back(rand_num);}
     }
 
     while (indices_test.size() < 20)
@@ -131,9 +120,8 @@ vector<int> test_generator()
         int rand_num = dis2(gen);
         bool exists = find(begin(indices_test), end(indices_test), rand_num) != end(indices_test);
 
-        if(exists == false){
-            indices_test.push_back(rand_num);
-        }
+        if(exists == false)
+        {indices_test.push_back(rand_num);}
     }
 
     while (indices_test.size() < 30)
@@ -141,9 +129,8 @@ vector<int> test_generator()
         int rand_num = dis3(gen);
         bool exists = find(begin(indices_test), end(indices_test), rand_num) != end(indices_test);
 
-        if(exists == false){
-            indices_test.push_back(rand_num);
-        }
+        if(exists == false)
+        {indices_test.push_back(rand_num);}
     }
 
     // Returning with the test vector
@@ -171,9 +158,7 @@ vector<int> train_generator(vector<int> indices_test)
         bool exists = find(begin(indices_test), end(indices_test), i) != end(indices_test);
 
         if(exists == false)
-        {
-            indices_train.push_back(i);
-        }
+        {indices_train.push_back(i);}
 
         i += 1;
     }
@@ -197,9 +182,7 @@ vector<T> data_split(vector<T> data, vector<int> indices)
 
     // Iterating through the data
     for(int i = 0; i < indices.size(); i++)
-    {
-        split_data.push_back(data[indices[i]]);
-    }
+    {split_data.push_back(data[indices[i]]);}
 
     // Returning with the split vector
     return(split_data);
@@ -220,27 +203,19 @@ int class_prediction(vector<double> X, vector<double> weights)
 
     // Multiplying the flower properties with the weights
     for(int i = 0; i < X.size(); i++)
-    {
-        classification += X[i]*weights[i+1];
-    }
+    {classification += X[i]*weights[i+1];}
 
     // Returning with the value 1 - first class - if the classification value is above 0.5
     if(classification > 0.5)
-    {
-        return 1;
-    }
+    {return 1;}
 
     // Returning with the value 0 - second class - if the classification value is between -0.5 and 0.5
     else if(classification > -0.5 && classification <= 0.5)
-    {
-        return 0;
-    }
+    {return 0;}
 
     // Returning with the value -1 - third class - if the classification value is below -0.5
     else if(classification <= 0.5)
-    {
-        return -1;
-    }
+    {return -1;}
 
 }
 
@@ -277,20 +252,16 @@ double test_predict(vector<double> a_test, vector<double> b_test, vector<double>
 
         // If the prediction result matches the testing result, the correct_values variable is increased by one
         if(class_result_vec[i] == y_test[i])
-        {
-            correct_values += 1;
-        }
+        {correct_values += 1;}
 
         // If the prediction result doesn't match the testing result, the correct_values variable is increased by one      
-        else
-        {
-            incorrect_values += 1;
-        }
+        else{incorrect_values += 1;}
     }
 
     // Calculating the accuracy 
     accuracy = correct_values / (correct_values + incorrect_values) * 100;
 
+    // Returning the accuracies
     return accuracy;
 
 }
@@ -340,9 +311,7 @@ vector<double> fitting_function(vector<double> a_train, vector<double> b_train, 
             // Iterating through the weights and multiplying the preceptor result with the properties
             // Updating the weights
             for(int k = 1; k < weights.size(); k++)
-            {
-                weights[k] += prec * x_train[k-1];
-            }
+            {weights[k] += prec * x_train[k-1];}
 
             // Updating the bias
             weights[0] += prec;
@@ -350,6 +319,8 @@ vector<double> fitting_function(vector<double> a_train, vector<double> b_train, 
 
         accuracy = test_predict(a_test, b_test, c_test, d_test, y_test, weights);
         accuracy_vec.push_back(accuracy);
+
+        cout << "Epoch: " << i << " / " << epochs << ". The current accuracy is: " << accuracy << ".\n";
     }
 
     // Returning the weights
@@ -417,8 +388,9 @@ int main()
     // Printing the accuracy vector
     //vec_print(accuracy);
 
+
     // Writing the vector into a txt file 
-    std::ofstream outFile("C:/All Files/MSc-IV/Adattud/iris/accuracy_vector.txt");
-    for (const auto &e : accuracy) outFile << e << "\n";
+    //std::ofstream outFile("C:/All Files/MSc-IV/Adattud/iris/accuracy_vector6.txt");
+    //for (const auto &e : accuracy) outFile << e << "\n";
 
 }
