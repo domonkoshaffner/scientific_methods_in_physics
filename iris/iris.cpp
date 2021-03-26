@@ -59,7 +59,7 @@ vector<int> reading_iris_y(string input)
         if (values == "Iris-setosa")
         {y.push_back(-1);}
         else if (values == "Iris-versicolor")
-        {y.push_back(-1);}
+        {y.push_back(1);}
         else if (values == "Iris-virginica")
         {y.push_back(0);}
     }
@@ -98,18 +98,20 @@ vector<int> test_generator()
     // Generate pseudo-random numbers
     // Uniformly distributed in range (1, 150)
     uniform_int_distribution<> dis1(0, 49);
-    uniform_int_distribution<> dis2(0, 99);
-    uniform_int_distribution<> dis3(0, 149);
+    uniform_int_distribution<> dis2(50, 99);
+    uniform_int_distribution<> dis3(100, 149);
 
     // Creating array for the indices
     vector<int> indices_test;
+    int rand_num;
+    bool exists;
 
     // Generate ten pseudo-random numbers
     // I'm using 80% training and 20% testing data
     while (indices_test.size() < 10)
     {
-        int rand_num = dis1(gen);
-        bool exists = find(begin(indices_test), end(indices_test), rand_num) != end(indices_test);
+        rand_num = dis1(gen);
+        exists = find(begin(indices_test), end(indices_test), rand_num) != end(indices_test);
 
         if(exists == false)
         {indices_test.push_back(rand_num);}
@@ -117,8 +119,8 @@ vector<int> test_generator()
 
     while (indices_test.size() < 20)
     {
-        int rand_num = dis2(gen);
-        bool exists = find(begin(indices_test), end(indices_test), rand_num) != end(indices_test);
+        rand_num = dis2(gen);
+        exists = find(begin(indices_test), end(indices_test), rand_num) != end(indices_test);
 
         if(exists == false)
         {indices_test.push_back(rand_num);}
@@ -126,8 +128,8 @@ vector<int> test_generator()
 
     while (indices_test.size() < 30)
     {
-        int rand_num = dis3(gen);
-        bool exists = find(begin(indices_test), end(indices_test), rand_num) != end(indices_test);
+        rand_num = dis3(gen);
+        exists = find(begin(indices_test), end(indices_test), rand_num) != end(indices_test);
 
         if(exists == false)
         {indices_test.push_back(rand_num);}
@@ -206,15 +208,15 @@ int class_prediction(vector<double> X, vector<double> weights)
     {classification += X[i]*weights[i+1];}
 
     // Returning with the value 1 - first class - if the classification value is above 0.5
-    if(classification > 0.5)
+    if(classification > 0.25)
     {return 1;}
 
     // Returning with the value 0 - second class - if the classification value is between -0.5 and 0.5
-    else if(classification > -0.5 && classification <= 0.5)
+    else if(classification > -0.25 && classification <= 0.25)
     {return 0;}
 
     // Returning with the value -1 - third class - if the classification value is below -0.5
-    else if(classification <= 0.5)
+    else if(classification <= -0.25)
     {return -1;}
 
 }
@@ -261,6 +263,10 @@ double test_predict(vector<double> a_test, vector<double> b_test, vector<double>
     // Calculating the accuracy 
     accuracy = correct_values / (correct_values + incorrect_values) * 100;
 
+    // Printing the class_result_vec
+    vec_print(class_result_vec);
+    cout << "\n";
+
     // Returning the accuracies
     return accuracy;
 
@@ -279,7 +285,7 @@ double test_predict(vector<double> a_test, vector<double> b_test, vector<double>
 vector<double> fitting_function(vector<double> a_train, vector<double> b_train, vector<double> c_train, vector<double> d_train, vector<double> a_test, vector<double> b_test, vector<double> c_test, vector<double> d_test, vector<int> y_train, vector<int> y_test, int epochs, double learning_rate)
 {
     // Creating a vector for the weight and for the four flower properties
-    vector<double> weights(5, 0.0);
+    vector<double> weights(5, 0);
     vector<double> x_train(4);
 
     // Creating variables for measuring the accuracy
@@ -357,7 +363,6 @@ int main()
     vector<int> y_test = data_split(y, indices_test);
     vector<int> y_train = data_split(y, indices_train);
 
-
     // Creating the epochs variable
     int epochs = 100;
 
@@ -369,7 +374,7 @@ int main()
     }
 
     // Creating the learning rate variable
-    double learning_rate = 0.01;
+    double learning_rate = 0.001;
 
     // Cheking if the learning rate is a valid number
     if(learning_rate <= 0)
@@ -384,10 +389,6 @@ int main()
 
     // Outputting the results
     //cout << "\nThe prediction after " << epochs << " iteration(s), with a learning rate of " << learning_rate <<" is " << accuracy[epochs-1] << "% accurate.\n";
-
-    // Printing the accuracy vector
-    //vec_print(accuracy);
-
 
     // Writing the vector into a txt file 
     //std::ofstream outFile("C:/All Files/MSc-IV/Adattud/iris/accuracy_vector6.txt");
