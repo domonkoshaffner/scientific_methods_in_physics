@@ -57,11 +57,11 @@ vector<int> reading_iris_y(string input)
     while(inFile >> values)
     {
         if (values == "Iris-setosa")
-        {y.push_back(-1);}
+        {y.push_back(0);}
         else if (values == "Iris-versicolor")
         {y.push_back(1);}
         else if (values == "Iris-virginica")
-        {y.push_back(0);}
+        {y.push_back(2);}
     }
 
     inFile.close();
@@ -190,162 +190,178 @@ vector<T> data_split(vector<T> data, vector<int> indices)
     return(split_data);
 }
 
-
 //################################################
 
-// Function for predicting the values
-// First input is the X vector, containing the four properties of the flowers
-// Second input is the weights vector, where the first value is the bias
-// The output is either 1 or -1, depending on the classification
+// Generating random weight matrix
 
-int class_prediction(vector<double> X, vector<double> weights)
+vector<double> weight_generation()
 {
-    // Adding the bias to the classification value
-    double classification = weights[0];
 
-    // Multiplying the flower properties with the weights
-    for(int i = 0; i < X.size(); i++)
-    {classification += X[i]*weights[i+1];}
+    // Random seed
+    random_device rd;
 
-    // Returning with the value 1 - first class - if the classification value is above 0.5
-    if(classification > 0.25)
-    {return 1;}
+    // Initialize the pseudo-random number generator
+    mt19937 gen(rd());
 
-    // Returning with the value 0 - second class - if the classification value is between -0.5 and 0.5
-    else if(classification > -0.25 && classification <= 0.25)
-    {return 0;}
+    // Generate pseudo-random numbers
+    // Uniformly distributed in range (0, 1)
+    uniform_int_distribution<> weight_gen(0, 100000);
 
-    // Returning with the value -1 - third class - if the classification value is below -0.5
-    else if(classification <= -0.25)
-    {return -1;}
+    // Creating the weights matrix
+    const int num_of_rows = 5;
+    const int num_of_cols = 3;
 
-}
+    int it = num_of_rows*num_of_cols;
 
-//################################################
+    vector<double> weights;
 
-// Predicting the classes based on the test dataset
-//The first four inputs are the testing datasets
-// The fifth input is the testing classification values
-// The sixth input is the weights vector
-// The seveth input is the epoch number
-// The function calculates the prediction values and outputs the accuracy of the preceptor model
+    // Filling up the matrix
 
-double test_predict(vector<double> a_test, vector<double> b_test, vector<double> c_test, vector<double> d_test, vector<int> y_test, vector<double> weights)
-{
-    // Creating the combined four property- and the calles results vector 
-    vector<double> x_test(4);
-    vector<int> class_result_vec(a_test.size());
-
-    // Initialising some variables for the accuracy measure
-    double correct_values = 0.0;
-    double incorrect_values = 0.0;
-    double accuracy;
-
-    // Iterating through the data and collecting the test values in the x_test vector
-    for(int i = 0; i < a_test.size(); i++)
+    for(int i = 0; i < it; i++)
     {
-        x_test[0] = a_test[i];
-        x_test[1] = b_test[i];
-        x_test[2] = c_test[i];
-        x_test[3] = d_test[i];
-
-        // Predicting the results of the model
-        class_result_vec[i] = class_prediction(x_test, weights);
-
-        // If the prediction result matches the testing result, the correct_values variable is increased by one
-        if(class_result_vec[i] == y_test[i])
-        {correct_values += 1;}
-
-        // If the prediction result doesn't match the testing result, the correct_values variable is increased by one      
-        else{incorrect_values += 1;}
+        double rand_num = weight_gen(gen)/100000.0;
+        weights.push_back(rand_num);
     }
 
-    // Calculating the accuracy 
-    accuracy = correct_values / (correct_values + incorrect_values) * 100;
-
-    // Printing the class_result_vec
-    vec_print(class_result_vec);
-    cout << "\n";
-
-    // Returning the accuracies
-    return accuracy;
-
+    return weights;
 }
 
 
 //################################################
 
-// Function for modifying the weights and bias according to the learning rate and epoch number
-// First four inputs are the four properties
-// The fifth input is the flower type vector
-// The sixth input is the epoch number
-// The seventh input is the learning rate
-// The output vector is the weight vector, where the first element is the bias
+// Input 1-4: vectors of features 
+// Input 5: y vector
+// Input 6: weights vector
+// Output: x*weight + bias
 
-vector<double> fitting_function(vector<double> a_train, vector<double> b_train, vector<double> c_train, vector<double> d_train, vector<double> a_test, vector<double> b_test, vector<double> c_test, vector<double> d_test, vector<int> y_train, vector<int> y_test, int epochs, double learning_rate)
+vector<double> model(vector <double> a_train, vector <double> b_train, vector <double> c_train, vector <double> d_train, vector <int> y_train, vector<double> weights)
 {
-    // Creating a vector for the weight and for the four flower properties
-    vector<double> weights(5, 0);
-    vector<double> x_train(4);
 
-    // Creating variables for measuring the accuracy
-    double accuracy;
-    vector<double> accuracy_vec;
+    // Splitting the weight matrix into the appropriate vectors
+    vector<double> w1(weights.cbegin(), weights.cbegin() + 5);
+    vector<double> w2(weights.cbegin() + 5, weights.cbegin() + 10);
+    vector<double> w3(weights.cbegin() + 10, weights.cbegin() + 15);
 
-    // Creating a variable for the preceptor 
-    double prec;
+    // Creating vectors to store the elements
+    vector<double> result1;
+    vector<double> result2;
+    vector<double> result3;
 
-    // Iterating through the epochs
-    for(int i = 0; i <= epochs; i++)
+    // Creating the x*weights + bias vectors
+    for(int i = 0; i < a_train.size(); i++)
     {
-        // Iterating through the data
-        for(int j = 0; j < a_train.size(); j++)
-        {
-            // Selecting the flower properties
-            // Pushing them to the x_train vector
-            x_train[0] = a_train[j];
-            x_train[1] = b_train[j];
-            x_train[2] = c_train[j];
-            x_train[3] = d_train[j];            
+        result1.push_back(w1[0] + a_train[i]*w1[1] + b_train[i]*w1[2] + c_train[i]*w1[3] + d_train[i]*w1[4]);
+        result2.push_back(w2[0] + a_train[i]*w2[1] + b_train[i]*w2[2] + c_train[i]*w2[3] + d_train[i]*w2[4]);
+        result3.push_back(w3[0] + a_train[i]*w3[1] + b_train[i]*w3[2] + c_train[i]*w3[3] + d_train[i]*w3[4]);
+    }
 
-            // Calculating the current preceptor value
-            // Dot product of the four properties and weights, then adding the bias
-            // The result is 1 or -1 depending on the type, subtracting this from the true value
-            // Multiplying this with the learning_rate
-            prec = learning_rate * (y_train[j] - class_prediction(x_train, weights));
+    // Appending the vectors
+    result1.insert(end(result1), begin(result2), end(result2));
+    result1.insert(end(result1), begin(result3), end(result3));
 
-            // Iterating through the weights and multiplying the preceptor result with the properties
-            // Updating the weights
-            for(int k = 1; k < weights.size(); k++)
-            {weights[k] += prec * x_train[k-1];}
+    // Returning with the results
+    return result1;
+}
+//
 
-            // Updating the bias
-            weights[0] += prec;
-        }
+//################################################
 
-        accuracy = test_predict(a_test, b_test, c_test, d_test, y_test, weights);
-        accuracy_vec.push_back(accuracy);
+// Multiclass perceptron function
 
-        cout << "Epoch: " << i << " / " << epochs << ". The current accuracy is: " << accuracy << ".\n";
+
+vector<double> multiclass_perceptron(vector <double> a_train, vector <double> b_train, vector <double> c_train, vector <double> d_train, vector <int> y_train, vector<double> weights, double alpha)
+{
+
+    // Splitting the weight matrix into the appropriate vectors
+    vector<double> w1(weights.cbegin(), weights.cbegin() + 5);
+    vector<double> w2(weights.cbegin() + 5, weights.cbegin() + 10);
+    vector<double> w3(weights.cbegin() + 10, weights.cbegin() + 15);
+
+    // Getting the results of the dot product
+    vector<double> all_evals = model(a_train, b_train, c_train, d_train, y_train, weights);
+
+    // Splitting the results in an appropriate format for further use
+    vector<double> res1(all_evals.cbegin(), all_evals.cbegin() + 120);
+    vector<double> res2(all_evals.cbegin() + 120, all_evals.cbegin() + 240);
+    vector<double> res3(all_evals.cbegin() + 240, all_evals.cbegin() + 360);
+ 
+
+    // Iterating through the data
+    // Updating the weights
+    for(int i = 0; i < res1.size(); i++)
+    {
+        //getting the current max element in the list
+        vector<double> temp = {res1[i], res2[i], res3[i]};
+        auto it = max_element(begin(temp), end(temp));
+        int index = it - temp.begin();
+
+        
+        vec_print(temp);
+        cout << " - " << index << "\n";
+
+
+        //updating the weights for the predicted indices
+        weights[1 + index*5] += alpha*a_train[i];
+        weights[2 + index*5] += alpha*b_train[i];
+        weights[3 + index*5] += alpha*c_train[i];
+        weights[4 + index*5] += alpha*d_train[i];
+
+        //updating the weights for the actual indices
+        weights[1 + y_train[i]*5] -= alpha*a_train[i];
+        weights[2 + y_train[i]*5] -= alpha*b_train[i];
+        weights[3 + y_train[i]*5] -= alpha*c_train[i];
+        weights[4 + y_train[i]*5] -= alpha*d_train[i];
     }
 
     // Returning the weights
-    return accuracy_vec;
+    return weights;
 }
+
 
 //################################################
 
+// Final predection
+vector<int> final_pred(vector <double> a_train, vector <double> b_train, vector <double> c_train, vector <double> d_train, vector <int> y_train, vector<double> weights)
+{
+
+    // Getting the results of the dot product
+    vector<double> all_evals = model(a_train, b_train, c_train, d_train, y_train, weights);
+
+    // Splitting the results in an appropriate format for further use
+    vector<double> res1(all_evals.cbegin(), all_evals.cbegin() + 30);
+    vector<double> res2(all_evals.cbegin() + 30, all_evals.cbegin() + 60);
+    vector<double> res3(all_evals.cbegin() + 60, all_evals.cbegin() + 90);
+
+
+    // Setting up index vector
+    vector<int> indices;
+
+    // Iterating through the data
+    // Updating the weights
+    for(int i = 0; i < res1.size(); i++)
+    {
+        //getting the current max element in the list
+        vector<double> temp = {res1[i], res2[i], res3[i]};
+        auto it = max_element(begin(temp), end(temp));
+        indices.push_back(it - temp.begin());
+    }
+
+    // Returning with the indices
+    return indices;
+}
+
+//################################################
 
 int main()
 {  
     // Reading in the different properties of the flowers
-    vector<double> a = reading_iris_values("C:/All Files/MSc-IV/Adattud/iris/data/a_all.data");
-    vector<double> b = reading_iris_values("C:/All Files/MSc-IV/Adattud/iris/data/b_all.data");
-    vector<double> c = reading_iris_values("C:/All Files/MSc-IV/Adattud/iris/data/c_all.data");
-    vector<double> d = reading_iris_values("C:/All Files/MSc-IV/Adattud/iris/data/d_all.data");
+    vector<double> a = reading_iris_values("C:/Users/haffn/Desktop/MSc-IV/Adattud/iris/data/a_all.data");
+    vector<double> b = reading_iris_values("C:/Users/haffn/Desktop/MSc-IV/Adattud/iris/data/b_all.data");
+    vector<double> c = reading_iris_values("C:/Users/haffn/Desktop/MSc-IV/Adattud/iris/data/c_all.data");
+    vector<double> d = reading_iris_values("C:/Users/haffn/Desktop/MSc-IV/Adattud/iris/data/d_all.data");
 
     // Reading in the classification values of the flowers
-    vector<int> y = reading_iris_y("C:/All Files/MSc-IV/Adattud/iris/data/iris.data");
+    vector<int> y = reading_iris_y("C:/Users/haffn/Desktop/MSc-IV/Adattud/iris/data/iris.data");
 
     // Calling the test- and train generation function sand returning the indices of the data sets
     vector<int> indices_test = test_generator();
@@ -364,7 +380,9 @@ int main()
     vector<int> y_train = data_split(y, indices_train);
 
     // Creating the epochs variable
-    int epochs = 100;
+    int epochs = 1;
+    // Creating the learning rate variable
+    double learning_rate = 0.001;
 
     // Cheking if the epoch is a valid number
     if(epochs <= 0)
@@ -372,10 +390,6 @@ int main()
         cout << "\nPlease enter a valid epoch number!\n";
         exit(1);
     }
-
-    // Creating the learning rate variable
-    double learning_rate = 0.001;
-
     // Cheking if the learning rate is a valid number
     if(learning_rate <= 0)
     {
@@ -383,15 +397,30 @@ int main()
         exit(1);
     }
 
-
-    // Calling the fitting function
-    vector<double> accuracy = fitting_function(a_train, b_train, c_train, d_train, a_test, b_test, c_test, d_test, y_train, y_test, epochs, learning_rate);
-
-    // Outputting the results
-    //cout << "\nThe prediction after " << epochs << " iteration(s), with a learning rate of " << learning_rate <<" is " << accuracy[epochs-1] << "% accurate.\n";
-
     // Writing the vector into a txt file 
     //std::ofstream outFile("C:/All Files/MSc-IV/Adattud/iris/accuracy_vector6.txt");
     //for (const auto &e : accuracy) outFile << e << "\n";
+
+
+
+    // Calling the model
+    vector<double> weights = weight_generation();
+    // Iterating through the data
+    for(int i = 0; i < epochs; i++)
+    {
+        weights = multiclass_perceptron(a_train, b_train, c_train, d_train, y_train, weights, learning_rate);
+        //vec_print(weights);
+        //cout << "\n";
+    }
+
+
+    // Final prediction
+    vector<int> final_prediction = final_pred(a_test, b_test, c_test, d_test, y_test, weights);
+
+    // Printing the results
+    vec_print(y_test);
+    cout << "\n";
+    vec_print(final_prediction);
+    cout << "\n";
 
 }
