@@ -236,31 +236,19 @@ vector<double> weight_generation()
 
 vector<double> model(vector <double> a_train, vector <double> b_train, vector <double> c_train, vector <double> d_train, vector <int> y_train, vector<double> weights)
 {
-
-    // Splitting the weight matrix into the appropriate vectors
-    vector<double> w1(weights.cbegin(), weights.cbegin() + 5);
-    vector<double> w2(weights.cbegin() + 5, weights.cbegin() + 10);
-    vector<double> w3(weights.cbegin() + 10, weights.cbegin() + 15);
-
     // Creating vectors to store the elements
-    vector<double> result1;
-    vector<double> result2;
-    vector<double> result3;
+    vector<double> result;
 
     // Creating the x*weights + bias vectors
     for(int i = 0; i < a_train.size(); i++)
     {
-        result1.push_back(w1[0] + a_train[i]*w1[1] + b_train[i]*w1[2] + c_train[i]*w1[3] + d_train[i]*w1[4]);
-        result2.push_back(w2[0] + a_train[i]*w2[1] + b_train[i]*w2[2] + c_train[i]*w2[3] + d_train[i]*w2[4]);
-        result3.push_back(w3[0] + a_train[i]*w3[1] + b_train[i]*w3[2] + c_train[i]*w3[3] + d_train[i]*w3[4]);
+        result.push_back(weights[0] + a_train[i]*weights[3] + b_train[i]*weights[6] + c_train[i]*weights[9] + d_train[i]*weights[12]);
+        result.push_back(weights[1] + a_train[i]*weights[4] + b_train[i]*weights[7] + c_train[i]*weights[10] + d_train[i]*weights[13]);
+        result.push_back(weights[2] + a_train[i]*weights[5] + b_train[i]*weights[8] + c_train[i]*weights[11] + d_train[i]*weights[14]);
     }
 
-    // Appending the vectors
-    result1.insert(end(result1), begin(result2), end(result2));
-    result1.insert(end(result1), begin(result3), end(result3));
-
     // Returning with the results
-    return result1;
+    return result;
 }
 //
 
@@ -271,47 +259,45 @@ vector<double> model(vector <double> a_train, vector <double> b_train, vector <d
 
 vector<double> multiclass_perceptron(vector <double> a_train, vector <double> b_train, vector <double> c_train, vector <double> d_train, vector <int> y_train, vector<double> weights, double alpha)
 {
-
-    // Splitting the weight matrix into the appropriate vectors
-    vector<double> w1(weights.cbegin(), weights.cbegin() + 5);
-    vector<double> w2(weights.cbegin() + 5, weights.cbegin() + 10);
-    vector<double> w3(weights.cbegin() + 10, weights.cbegin() + 15);
-
     // Getting the results of the dot product
     vector<double> all_evals = model(a_train, b_train, c_train, d_train, y_train, weights);
-
-    // Splitting the results in an appropriate format for further use
-    vector<double> res1(all_evals.cbegin(), all_evals.cbegin() + 120);
-    vector<double> res2(all_evals.cbegin() + 120, all_evals.cbegin() + 240);
-    vector<double> res3(all_evals.cbegin() + 240, all_evals.cbegin() + 360);
  
+
+    vec_print(all_evals);
+    cout << "\n";
 
     // Iterating through the data
     // Updating the weights
-    for(int i = 0; i < res1.size(); i++)
+    for(int i = 0; i < a_train.size(); i++)
     {
         //getting the current max element in the list
-        vector<double> temp = {res1[i], res2[i], res3[i]};
+        vector<double> temp = {all_evals[i*3], all_evals[i*3+1], all_evals[i*3+2]};
         auto it = max_element(begin(temp), end(temp));
         int index = it - temp.begin();
 
+        //cout << index << ", ";
         
-        vec_print(temp);
-        cout << " - " << index << "\n";
+        //vec_print(temp);
+        //cout << " - " << index << "\n";
+
+        //vec_print(weights);
+        //cout << "\nThe chosen value: " << index << "\nThe actual value: " << y_train[i] << "\n";
 
 
         //updating the weights for the predicted indices
-        weights[1 + index*5] += alpha*a_train[i];
-        weights[2 + index*5] += alpha*b_train[i];
-        weights[3 + index*5] += alpha*c_train[i];
-        weights[4 + index*5] += alpha*d_train[i];
+        weights[3 + index] += alpha*a_train[i];
+        weights[6 + index] += alpha*b_train[i];
+        weights[9 + index] += alpha*c_train[i];
+        weights[12 + index] += alpha*d_train[i];
 
         //updating the weights for the actual indices
-        weights[1 + y_train[i]*5] -= alpha*a_train[i];
-        weights[2 + y_train[i]*5] -= alpha*b_train[i];
-        weights[3 + y_train[i]*5] -= alpha*c_train[i];
-        weights[4 + y_train[i]*5] -= alpha*d_train[i];
+        weights[3 + y_train[i]] -= alpha*a_train[i];
+        weights[6 + y_train[i]] -= alpha*b_train[i];
+        weights[9 + y_train[i]] -= alpha*c_train[i];
+        weights[12 + y_train[i]] -= alpha*d_train[i];
     }
+
+    //cout << "\n";
 
     // Returning the weights
     return weights;
@@ -327,21 +313,15 @@ vector<int> final_pred(vector <double> a_train, vector <double> b_train, vector 
     // Getting the results of the dot product
     vector<double> all_evals = model(a_train, b_train, c_train, d_train, y_train, weights);
 
-    // Splitting the results in an appropriate format for further use
-    vector<double> res1(all_evals.cbegin(), all_evals.cbegin() + 30);
-    vector<double> res2(all_evals.cbegin() + 30, all_evals.cbegin() + 60);
-    vector<double> res3(all_evals.cbegin() + 60, all_evals.cbegin() + 90);
-
-
     // Setting up index vector
     vector<int> indices;
 
     // Iterating through the data
     // Updating the weights
-    for(int i = 0; i < res1.size(); i++)
+    for(int i = 0; i < a_train.size(); i++)
     {
         //getting the current max element in the list
-        vector<double> temp = {res1[i], res2[i], res3[i]};
+        vector<double> temp = {all_evals[i*3], all_evals[i*3+1], all_evals[i*3+2]};
         auto it = max_element(begin(temp), end(temp));
         indices.push_back(it - temp.begin());
     }
@@ -401,10 +381,18 @@ int main()
     //std::ofstream outFile("C:/All Files/MSc-IV/Adattud/iris/accuracy_vector6.txt");
     //for (const auto &e : accuracy) outFile << e << "\n";
 
+    vec_print(indices_train);
+    cout << "\n";
+    vec_print(indices_test);
+    cout << "\n";
 
 
     // Calling the model
     vector<double> weights = weight_generation();
+
+    vec_print(weights);
+    cout << "\n\n";
+
     // Iterating through the data
     for(int i = 0; i < epochs; i++)
     {
@@ -418,9 +406,11 @@ int main()
     vector<int> final_prediction = final_pred(a_test, b_test, c_test, d_test, y_test, weights);
 
     // Printing the results
+    /*
     vec_print(y_test);
     cout << "\n";
     vec_print(final_prediction);
     cout << "\n";
+    */
 
 }
