@@ -210,13 +210,10 @@ vector<double> weight_generation()
     // Creating the weights matrix
     const int num_of_rows = 5;
     const int num_of_cols = 3;
-
     int it = num_of_rows*num_of_cols;
-
     vector<double> weights;
 
     // Filling up the matrix
-
     for(int i = 0; i < it; i++)
     {
         double rand_num = weight_gen(gen)/100000.0;
@@ -263,9 +260,6 @@ vector<double> multiclass_perceptron(vector <double> a_train, vector <double> b_
     vector<double> all_evals = model(a_train, b_train, c_train, d_train, y_train, weights);
  
 
-    vec_print(all_evals);
-    cout << "\n";
-
     // Iterating through the data
     // Updating the weights
     for(int i = 0; i < a_train.size(); i++)
@@ -275,29 +269,18 @@ vector<double> multiclass_perceptron(vector <double> a_train, vector <double> b_
         auto it = max_element(begin(temp), end(temp));
         int index = it - temp.begin();
 
-        //cout << index << ", ";
-        
-        //vec_print(temp);
-        //cout << " - " << index << "\n";
-
-        //vec_print(weights);
-        //cout << "\nThe chosen value: " << index << "\nThe actual value: " << y_train[i] << "\n";
-
-
         //updating the weights for the predicted indices
-        weights[3 + index] += alpha*a_train[i];
-        weights[6 + index] += alpha*b_train[i];
-        weights[9 + index] += alpha*c_train[i];
-        weights[12 + index] += alpha*d_train[i];
+        weights[3 + index] -= alpha*a_train[i];
+        weights[6 + index] -= alpha*b_train[i];
+        weights[9 + index] -= alpha*c_train[i];
+        weights[12 + index] -= alpha*d_train[i];
 
         //updating the weights for the actual indices
-        weights[3 + y_train[i]] -= alpha*a_train[i];
-        weights[6 + y_train[i]] -= alpha*b_train[i];
-        weights[9 + y_train[i]] -= alpha*c_train[i];
-        weights[12 + y_train[i]] -= alpha*d_train[i];
+        weights[3 + y_train[i]] += alpha*a_train[i];
+        weights[6 + y_train[i]] += alpha*b_train[i];
+        weights[9 + y_train[i]] += alpha*c_train[i];
+        weights[12 + y_train[i]] += alpha*d_train[i];
     }
-
-    //cout << "\n";
 
     // Returning the weights
     return weights;
@@ -360,7 +343,7 @@ int main()
     vector<int> y_train = data_split(y, indices_train);
 
     // Creating the epochs variable
-    int epochs = 1;
+    int epochs = 500;
     // Creating the learning rate variable
     double learning_rate = 0.001;
 
@@ -377,40 +360,28 @@ int main()
         exit(1);
     }
 
-    // Writing the vector into a txt file 
-    //std::ofstream outFile("C:/All Files/MSc-IV/Adattud/iris/accuracy_vector6.txt");
-    //for (const auto &e : accuracy) outFile << e << "\n";
-
-    vec_print(indices_train);
-    cout << "\n";
-    vec_print(indices_test);
-    cout << "\n";
-
 
     // Calling the model
     vector<double> weights = weight_generation();
 
-    vec_print(weights);
-    cout << "\n\n";
-
     // Iterating through the data
     for(int i = 0; i < epochs; i++)
-    {
-        weights = multiclass_perceptron(a_train, b_train, c_train, d_train, y_train, weights, learning_rate);
-        //vec_print(weights);
-        //cout << "\n";
-    }
+    {weights = multiclass_perceptron(a_train, b_train, c_train, d_train, y_train, weights, learning_rate);}
 
 
     // Final prediction
     vector<int> final_prediction = final_pred(a_test, b_test, c_test, d_test, y_test, weights);
 
     // Printing the results
-    /*
+    cout << "The real labels: ";
     vec_print(y_test);
-    cout << "\n";
+    cout << "\nThe predicted label: ";
     vec_print(final_prediction);
     cout << "\n";
-    */
+
+    // Writing the vector into a txt file 
+    std::ofstream outFile("C:/All Files/MSc-IV/Adattud/iris/accuracy_vector.txt");
+    for (const auto &e : final_prediction) outFile << e << "\n";
+    
 
 }
