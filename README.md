@@ -1,4 +1,4 @@
-# Scientific Methods in Physics
+# Scientific Methods in Physics - C++
 
 This directory contains the materials, codes and reports created for the Scientific Methods in Physics University course. 
 
