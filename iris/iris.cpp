@@ -3,6 +3,7 @@
 #include <iostream>     // std::cout
 #include <fstream>      // std::ifstream
 #include <random>
+#include <chrono>
 
 #include "iris_functions.h"
 #include "iris_model.h"
@@ -48,7 +49,7 @@ int main()
     vector<int> y_train = data_split(y, indices_train);
 
     // Creating the epochs variable
-    int epochs = 500;
+    int epochs = 100;
     // Creating the learning rate variable
     double learning_rate = 0.001;
 
@@ -65,6 +66,9 @@ int main()
         exit(1);
     }
 
+
+    // Starting clock 
+    chrono::steady_clock::time_point begin = chrono::steady_clock::now();
 
     // Calling the model
     vector<double> weights = weight_generation();
@@ -94,4 +98,10 @@ int main()
     // Writing the vector into a txt file 
     std::ofstream outFile("C:/Users/haffn/Desktop/MSc-IV/Adattud/iris/accuracy_vector.txt");
     for (const auto &e : final_prediction) outFile << e << "\n";
+
+    // Stopping the clock
+    chrono::steady_clock::time_point end = chrono::steady_clock::now();
+
+    // Printing the elapsed time in microseconds
+    cout << "Required time for the model: " << chrono::duration_cast<chrono::microseconds> (end-begin).count()/1000 << " ms" << "\n";
 }
