@@ -79,7 +79,7 @@ vector<double> multiclass_perceptron(vector <double> a, vector <double> b, vecto
 
     // Declaring some variables
     vector<double> temp;
-    int index;
+    int64_t index;
 
     // Iterating through the data
     // Updating the weights
