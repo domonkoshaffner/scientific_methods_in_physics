@@ -1,17 +1,11 @@
-#include <iterator>
-#include <vector>       // std::vector
-#include <iostream>     // std::cout
-#include <fstream>      // std::ifstream
-#include <random>
-#include <chrono>
-
 #include "iris_functions.h"
 #include "iris_model.h"
 
-using namespace std;
-
+#include "iris_functions.cpp"
+#include "iris_model.cpp"
 
 // Main function
+// First the users has to give the source of the data set into the source_of_data string
 // Reading in the files for the iris data set: features - a, b, c, d; labels - y
 // Splitting the data into train and test data sets (80%-20%)
 // Setting the epoch and learning rate
@@ -23,14 +17,17 @@ using namespace std;
 int main()
 {  
 
+    // Please enter the source of the data set
+    string source_of_data = "C:/Users/haffn/Desktop/MSc-IV/Adattud/iris/data/";
+    
     // Reading in the different properties of the flowers
-    vector<double> a = reading_iris_values("C:/Users/haffn/Desktop/MSc-IV/Adattud/iris/data/a_all.data");
-    vector<double> b = reading_iris_values("C:/Users/haffn/Desktop/MSc-IV/Adattud/iris/data/b_all.data");
-    vector<double> c = reading_iris_values("C:/Users/haffn/Desktop/MSc-IV/Adattud/iris/data/c_all.data");
-    vector<double> d = reading_iris_values("C:/Users/haffn/Desktop/MSc-IV/Adattud/iris/data/d_all.data");
+    vector<double> a = reading_iris_values(source_of_data + "a_all.data");
+    vector<double> b = reading_iris_values(source_of_data + "b_all.data");
+    vector<double> c = reading_iris_values(source_of_data + "c_all.data");
+    vector<double> d = reading_iris_values(source_of_data + "d_all.data");
 
     // Reading in the classification values of the flowers
-    vector<int> y = reading_iris_y("C:/Users/haffn/Desktop/MSc-IV/Adattud/iris/data/iris.data");
+    vector<int> y = reading_iris_y(source_of_data + "iris.data");
 
     // Calling the test- and train generation function sand returning the indices of the data sets
     vector<int> indices_test = test_generator();
@@ -49,7 +46,7 @@ int main()
     vector<int> y_train = data_split(y, indices_train);
 
     // Creating the epochs variable
-    int epochs = 100;
+    int epochs = 500;
     // Creating the learning rate variable
     double learning_rate = 0.001;
 
