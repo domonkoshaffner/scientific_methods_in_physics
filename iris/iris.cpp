@@ -19,6 +19,9 @@ int main()
 
     // Please enter the source of the data set
     string source_of_data = "C:/Users/haffn/Desktop/MSc-IV/Adattud/iris/data/";
+
+    // Please enter where you would like to save your file 
+    string output_file = "C:/Users/haffn/Desktop/MSc-IV/Adattud/iris/";
     
     // Reading in the different properties of the flowers
     vector<double> a = reading_iris_values(source_of_data + "a_all.data");
@@ -46,9 +49,9 @@ int main()
     vector<int> y_train = data_split(y, indices_train);
 
     // Creating the epochs variable
-    int epochs = 500;
+    const int epochs = 500;
     // Creating the learning rate variable
-    double learning_rate = 0.001;
+    const double learning_rate = 0.001;
 
     // Cheking if the epoch is a valid number
     if(epochs <= 0)
@@ -93,8 +96,8 @@ int main()
     
 
     // Writing the vector into a txt file 
-    std::ofstream outFile("C:/Users/haffn/Desktop/MSc-IV/Adattud/iris/accuracy_vector.txt");
-    for (const auto &e : final_prediction) outFile << e << "\n";
+    //std::ofstream outFile(output_file + "accuracy_vector.txt");
+    //for (const auto &e : final_prediction) outFile << e << "\n";
 
     // Stopping the clock
     chrono::steady_clock::time_point end = chrono::steady_clock::now();

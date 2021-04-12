@@ -96,37 +96,38 @@ vector<int> test_generator()
     uniform_int_distribution<> dis3(100, 149);
 
     // Creating array for the indices
-    vector<int> indices_test;
+    vector<int> indices_test(30);
     int rand_num;
     bool exists;
 
     // Generate ten pseudo-random numbers
     // Using 20% as testing data
-    while (indices_test.size() < 10)
+
+    for(int i = 0; i < 10; i++)
     {
         rand_num = dis1(gen);
         exists = find(begin(indices_test), end(indices_test), rand_num) != end(indices_test);
 
         if(exists == false)
-        {indices_test.push_back(rand_num);}
+        indices_test[i] = rand_num;      
     }
 
-    while (indices_test.size() < 20)
+    for(int i = 10; i < 20; i++)
     {
         rand_num = dis2(gen);
         exists = find(begin(indices_test), end(indices_test), rand_num) != end(indices_test);
 
         if(exists == false)
-        {indices_test.push_back(rand_num);}
+        indices_test[i] = rand_num;      
     }
 
-    while (indices_test.size() < 30)
+    for(int i = 20; i < 30; i++)
     {
         rand_num = dis3(gen);
         exists = find(begin(indices_test), end(indices_test), rand_num) != end(indices_test);
 
         if(exists == false)
-        {indices_test.push_back(rand_num);}
+        indices_test[i] = rand_num;
     }
 
     // Returning with the test vector indices
@@ -177,11 +178,11 @@ vector<T> data_split(vector<T> data, vector<int> indices)
 {
 
     // Creating the new vector
-    vector<T> split_data;
+    vector<T> split_data(indices.size());
 
     // Iterating through the data
     for(int i = 0; i < indices.size(); i++)
-    {split_data.push_back(data[indices[i]]);}
+    {split_data[i] = data[indices[i]];}
 
     // Returning with the split vector
     return(split_data);

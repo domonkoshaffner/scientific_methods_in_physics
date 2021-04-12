@@ -18,20 +18,17 @@ vector<double> weight_generation()
     // Uniformly distributed in range (0, 1)
     uniform_int_distribution<> weight_gen(0, 100000);
 
-    // Creating the weights matrix
-    const int num_of_rows = 5;
-    const int num_of_cols = 3;
-    int it = num_of_rows*num_of_cols;
-    vector<double> weights;
+    // Creating the weights matrix;
+    vector<double> weights(15);
 
     // Declaring rand_num
     double rand_num;
 
     // Filling up the matrix
-    for(int i = 0; i < it; i++)
+    for(int i = 0; i < 15; i++)
     {
         rand_num = weight_gen(gen)/100000.0;
-        weights.push_back(rand_num);
+        weights[i] = rand_num;
     }
 
     // Returning the weights
@@ -50,14 +47,14 @@ vector<double> weight_generation()
 vector<double> model(vector <double> a, vector <double> b, vector <double> c, vector <double> d, vector <int> y, vector<double> weights)
 {
     // Creating vectors to store the elements
-    vector<double> result;
+    vector<double> result(a.size()*3);
 
     // Creating the x*weights + bias vectors
     for(int i = 0; i < a.size(); i++)
     {
-        result.push_back(weights[0] + a[i]*weights[3] + b[i]*weights[6] + c[i]*weights[9] + d[i]*weights[12]);
-        result.push_back(weights[1] + a[i]*weights[4] + b[i]*weights[7] + c[i]*weights[10] + d[i]*weights[13]);
-        result.push_back(weights[2] + a[i]*weights[5] + b[i]*weights[8] + c[i]*weights[11] + d[i]*weights[14]);
+        result[i*3] = weights[0] + a[i]*weights[3] + b[i]*weights[6] + c[i]*weights[9] + d[i]*weights[12];
+        result[i*3 + 1] = weights[1] + a[i]*weights[4] + b[i]*weights[7] + c[i]*weights[10] + d[i]*weights[13];
+        result[i*3 + 2] = weights[2] + a[i]*weights[5] + b[i]*weights[8] + c[i]*weights[11] + d[i]*weights[14];
     }
 
     // Returning with the results
@@ -125,7 +122,7 @@ vector<int> final_pred(vector <double> a, vector <double> b, vector <double> c, 
     vector<double> all_evals = model(a, b, c, d, y, weights);
 
     // Setting up index vector
-    vector<int> indices;
+    vector<int> indices(a.size());
     vector<double> temp;
 
     // Iterating through the data
@@ -135,7 +132,7 @@ vector<int> final_pred(vector <double> a, vector <double> b, vector <double> c, 
         //getting the current max element in the list
         temp = {all_evals[i*3], all_evals[i*3+1], all_evals[i*3+2]};
         auto it = max_element(begin(temp), end(temp));
-        indices.push_back(it - temp.begin());
+        indices[i] = it - temp.begin();
     }
 
     // Returning with the indices
