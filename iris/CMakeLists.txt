@@ -1,10 +1,10 @@
 cmake_minimum_required(VERSION 3.7)
 
-project(NEWTONITERATOR LANGUAGES CXX)
+project(IRIS LANGUAGES CXX)
 
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules)
 
-set(Sources iris.cpp)
+set(Sources iris_main.cpp iris_functions.cpp)
 
 add_executable(${PROJECT_NAME} ${Sources})
 

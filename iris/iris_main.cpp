@@ -1,10 +1,6 @@
-// Including the neccessary header and cpp files
+// Including the neccessary header file
 
 #include "iris_functions.h"
-#include "iris_model.h"
-
-#include "iris_functions.cpp"
-#include "iris_model.cpp"
 
 // Main function
 // First the users has to give the source of the data set into the source_of_data string

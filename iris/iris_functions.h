@@ -1,10 +1,14 @@
-/*
-#ifndef iris_model_hpp
-#define iris_model_hpp
-*/
+#ifndef IRIS_FUNCTIONS_H
+#define IRIS_FUNCTIONS_H
 
+#include <iterator>
+#include <vector>       // std::vector
+#include <iostream>     // std::cout
+#include <fstream>      // std::ifstream
+#include <random>
+#include <chrono>
 
-#include "iris_model.h"
+using namespace std;
 
 // Reading in the Iris features from .txt files
 vector<double> reading_iris_values(string input);
@@ -22,5 +26,19 @@ vector<int> test_generator();
 // Function for generating the training data set
 vector<int> train_generator(vector<int> &indices_test);
 
+// Function for generating random weight matrix
+vector<double> weight_generation();
 
-//#endif
+// Function for the dot product of the weights and features
+vector<double> model(vector <double> &a, vector <double> &b, vector <double> &c, vector <double> &d, vector <int> &y, vector<double> &weights);
+
+// Multiclass perceptron function
+vector<double> multiclass_perceptron(vector <double> &a, vector <double> &b, vector <double> &c, vector <double> &d, vector <int> &y, vector<double> &weights, double alpha);
+
+// Function for calculating the final prediction
+vector<int> final_pred(vector <double> &a, vector <double> &b, vector <double> &c, vector <double> &d, vector <int> &y, vector<double> &weights);
+
+// Function for calculating the accuracy of the prediction
+void acc_calc(vector<int> &prediction, vector<int> &real_y);
+
+#endif /* IRIS_FUNCTIONS_H */
