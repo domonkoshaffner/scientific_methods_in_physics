@@ -1,4 +1,5 @@
 #include "iris_functions.h"
+#include "iris_model.h"
 
 // Function for reading in the flowers properties
 // The input is the location of the data set
@@ -68,7 +69,7 @@ vector<int> reading_iris_y(string input)
 // Input is the vector to be printed
 
 template <class T>
-void vec_print(vector<T> data)
+void vec_print(vector<T> &data)
 {
     for(int i = 0; i < data.size(); i++)
     {cout << data[i] << ", ";}
@@ -140,7 +141,7 @@ vector<int> test_generator()
 // The input is a vector of the indices of the testing data set
 // The otput is the training data set's indices
 
-vector<int> train_generator(vector<int> indices_test)
+vector<int> train_generator(vector<int> &indices_test)
 {
     // Creating array for the indices
     vector<int> indices_train;

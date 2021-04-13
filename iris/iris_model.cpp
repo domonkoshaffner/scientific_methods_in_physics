@@ -1,3 +1,4 @@
+#include "iris_functions.h"
 #include "iris_model.h"
 
 
@@ -44,7 +45,7 @@ vector<double> weight_generation()
 // Input 6: weights vector
 // Output: x*weight + bias
 
-vector<double> model(vector <double> a, vector <double> b, vector <double> c, vector <double> d, vector <int> y, vector<double> weights)
+vector<double> model(vector <double> &a, vector <double> &b, vector <double> &c, vector <double> &d, vector <int> &y, vector<double> &weights)
 {
     // Creating vectors to store the elements
     vector<double> result(a.size()*3);
@@ -72,7 +73,7 @@ vector<double> model(vector <double> a, vector <double> b, vector <double> c, ve
 // Input 8: learning rate
 // Output: recalculated weights
 
-vector<double> multiclass_perceptron(vector <double> a, vector <double> b, vector <double> c, vector <double> d, vector <int> y, vector<double> weights, double alpha)
+vector<double> multiclass_perceptron(vector <double> &a, vector <double> &b, vector <double> &c, vector <double> &d, vector <int> &y, vector<double> &weights, double alpha)
 {
     // Getting the results of the dot product
     vector<double> all_evals = model(a, b, c, d, y, weights);
@@ -116,7 +117,7 @@ vector<double> multiclass_perceptron(vector <double> a, vector <double> b, vecto
 // Input 6: weights vector
 // Output: predicted labels
 
-vector<int> final_pred(vector <double> a, vector <double> b, vector <double> c, vector <double> d, vector <int> y, vector<double> weights)
+vector<int> final_pred(vector <double> &a, vector <double> &b, vector <double> &c, vector <double> &d, vector <int> &y, vector<double> &weights)
 {
     // Getting the results of the dot product
     vector<double> all_evals = model(a, b, c, d, y, weights);
@@ -144,7 +145,7 @@ vector<int> final_pred(vector <double> a, vector <double> b, vector <double> c, 
 // Function for calculating the accuracy of the prediction
 // Input: the prediction vector
 
-void acc_calc(vector<int> prediction, vector<int> real_y)
+void acc_calc(vector<int> &prediction, vector<int> &real_y)
 {
     // Creating vector for the correct and incorrect predictions
     double correct_pred = 0.0;
