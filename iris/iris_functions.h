@@ -20,6 +20,10 @@ vector<int> reading_iris_y(string input);
 template <class T>
 void vec_print(vector<T> &data);
 
+// 
+template <class T>
+vector<T> data_split(vector<T> data, vector<int> indices);
+
 // Function for generating the test indices in 20%-80%
 vector<int> test_generator();
 
