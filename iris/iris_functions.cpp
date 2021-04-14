@@ -201,7 +201,7 @@ vector<double> weight_generation()
 // Input 6: weights vector
 // Output: x*weight + bias
 
-vector<double> model(const vector <double> &a, const vector <double> &b, const vector <double> &c, const vector <double> &d, const vector <int> &y, vector<double> &weights)
+vector<double> model(const vector <double> &a, const vector <double> &b, const vector <double> &c, const vector <double> &d, const vector <int> &y, const vector<double> &weights)
 {
     // Creating vectors to store the elements
     vector<double> result(a.size()*3);
@@ -273,7 +273,7 @@ vector<double> multiclass_perceptron(const vector <double> &a, const vector <dou
 // Input 6: weights vector
 // Output: predicted labels
 
-vector<int> final_pred(const vector <double> &a, const vector <double> &b, const vector <double> &c, const vector <double> &d, const vector <int> &y, vector<double> &weights)
+vector<int> final_pred(const vector <double> &a, const vector <double> &b, const vector <double> &c, const vector <double> &d, const vector <int> &y, const vector<double> &weights)
 {
     // Getting the results of the dot product
     vector<double> all_evals = model(a, b, c, d, y, weights);

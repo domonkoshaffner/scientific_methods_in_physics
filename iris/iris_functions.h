@@ -63,13 +63,13 @@ vector<int> train_generator(const vector<int> &indices_test);
 vector<double> weight_generation();
 
 // Function for the dot product of the weights and features
-vector<double> model(const vector <double> &a, const vector <double> &b, const vector <double> &c, const vector <double> &d, const vector <int> &y, vector<double> &weights);
+vector<double> model(const vector <double> &a, const vector <double> &b, const vector <double> &c, const vector <double> &d, const vector <int> &y, const vector<double> &weights);
 
 // Multiclass perceptron function
 vector<double> multiclass_perceptron(const vector <double> &a, const vector <double> &b, const vector <double> &c, const vector <double> &d, const vector <int> &y, vector<double> &weights, double alpha);
 
 // Function for calculating the final prediction
-vector<int> final_pred(const vector <double> &a, const vector <double> &b, const vector <double> &c, const vector <double> &d, const vector <int> &y, vector<double> &weights);
+vector<int> final_pred(const vector <double> &a, const vector <double> &b, const vector <double> &c, const vector <double> &d, const vector <int> &y, const vector<double> &weights);
 
 // Function for calculating the accuracy of the prediction
 void acc_calc(const vector<int> &prediction, const vector<int> &real_y);
