@@ -10,19 +10,48 @@
 
 using namespace std;
 
+//###############################
+
+// TEMPLATE FUNCTIONS 
+
+// Function for splitting the data set into training and testing sets according to the indices
+// Input is the vector of indices and the data to be split
+// Output is the split data set
+
+template <class T>
+vector<T> data_split(vector<T> &data, vector<int> &indices)
+{
+    // Creating the new vector
+    vector<T> split_data(indices.size());
+
+    // Iterating through the data
+    for(int i = 0; i < indices.size(); i++)
+    {split_data[i] = data[indices[i]];}
+
+    // Returning with the split vector
+    return(split_data);
+}
+
+
+// Function for printing any vector
+// Input is the vector to be printed
+
+template <class T>
+void vec_print(vector<T> &data)
+{
+    for(int i = 0; i < data.size(); i++)
+    {cout << data[i] << ", ";}
+}
+
+//###############################
+
+// DEFINITIONS
+
 // Reading in the Iris features from .txt files
 vector<double> reading_iris_values(string input);
 
 // Reading in the Iris labels from .txt files
 vector<int> reading_iris_y(string input);
-
-// Function for printing an arbitrary vector
-template <class T>
-void vec_print(vector<T> &data);
-
-// 
-template <class T>
-vector<T> data_split(vector<T> data, vector<int> indices);
 
 // Function for generating the test indices in 20%-80%
 vector<int> test_generator();
