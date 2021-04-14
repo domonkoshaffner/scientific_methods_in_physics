@@ -114,7 +114,10 @@ int main()
 
 
     // Writing the results into a .txt file
-    //std::ofstream outFile(output_file + "accuracy_vector.txt");
-    //for (const auto &e : final_prediction) outFile << e << "\n";
+    std::ofstream results;
+    results.open("../../../numerical_int_results.txt");
+    results << "Midpoint,Trapezoidal,Simspon\n";
+    results << mid_points << "," << trapez_int_result << "," << simpson_result;
+    results.close();
 }
 
