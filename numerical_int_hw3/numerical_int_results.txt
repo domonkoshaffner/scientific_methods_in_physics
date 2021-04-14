@@ -1,0 +1,2 @@
+Midpoint,Trapezoidal,Simspon
+200.256,200.256,200.256
