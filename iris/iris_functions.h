@@ -69,7 +69,7 @@ vector<double> model(const vector <double> &a, const vector <double> &b, const v
 vector<double> multiclass_perceptron(const vector <double> &a, const vector <double> &b, const vector <double> &c, const vector <double> &d, const vector <int> &y, vector<double> &weights, double alpha);
 
 // Function for calculating the final prediction
-vector<int> final_pred(const vector <double> &a, const vector <double> &b, const vector <double> &c, const vector <double> &d, vector <int> &y, vector<double> &weights);
+vector<int> final_pred(const vector <double> &a, const vector <double> &b, const vector <double> &c, const vector <double> &d, const vector <int> &y, vector<double> &weights);
 
 // Function for calculating the accuracy of the prediction
 void acc_calc(const vector<int> &prediction, const vector<int> &real_y);
