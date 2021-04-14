@@ -66,12 +66,12 @@ vector<double> weight_generation();
 vector<double> model(const vector <double> &a, const vector <double> &b, const vector <double> &c, const vector <double> &d, const vector <int> &y, const vector<double> &weights);
 
 // Multiclass perceptron function
-vector<double> multiclass_perceptron(const vector <double> &a, const vector <double> &b, const vector <double> &c, const vector <double> &d, const vector <int> &y, vector<double> &weights, double alpha);
+vector<int> multiclass_perceptron(const vector <double> &a, const vector <double> &b, const vector <double> &c, const vector <double> &d, const vector <int> &y, vector<double> &weights, double alpha, vector<double> &cost_vec, int current_epoch);
 
 // Function for calculating the final prediction
 vector<int> final_pred(const vector <double> &a, const vector <double> &b, const vector <double> &c, const vector <double> &d, const vector <int> &y, const vector<double> &weights);
 
 // Function for calculating the accuracy of the prediction
-void acc_calc(const vector<int> &prediction, const vector<int> &real_y);
+double acc_calc(const vector<int> &prediction, const vector<int> &real_y);
 
 #endif /* IRIS_FUNCTIONS_H */

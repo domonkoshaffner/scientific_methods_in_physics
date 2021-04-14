@@ -49,7 +49,7 @@ int main()
     // Creating the epochs variable
     const int epochs = 500;
     // Creating the learning rate variable
-    const double learning_rate = 0.001;
+    const double learning_rate = 0.1;
 
     // Cheking if the epoch is a valid number
     if(epochs <= 0)
@@ -71,10 +71,27 @@ int main()
     // Calling the model
     vector<double> weights = weight_generation();
 
+    // Creating a vector for the cost values, the accuracy values and temp for current predictions
+    vector<double> cost_vec(epochs);
+    vector<double> current_train_acc(epochs);
+    vector<int> current_train_pred_temp;
+    vector<double> current_test_acc(epochs);
+    vector<int> current_test_pred_temp;
+
     // Iterating through the data
     for(int i = 0; i < epochs; i++)
     {
-        weights = multiclass_perceptron(a_train, b_train, c_train, d_train, y_train, weights, learning_rate);
+        //calling the model
+        current_train_pred_temp = multiclass_perceptron(a_train, b_train, c_train, d_train, y_train, weights, learning_rate, cost_vec, i);
+
+        //calculating the current accuracy for the trainin data set
+        current_train_acc[i] = acc_calc(current_train_pred_temp, y_train);       
+
+        //calculating the current accuracy for the test data set
+        current_test_pred_temp = final_pred(a_test, b_test, c_test, d_test, y_test, weights);
+        current_test_acc[i] = acc_calc(current_test_pred_temp, y_test);
+
+        //printing the current epoch
         cout << "Current epoch: " << i+1 << " / " << epochs << "\n";
     }
 
@@ -82,15 +99,17 @@ int main()
     // Final prediction
     vector<int> final_prediction = final_pred(a_test, b_test, c_test, d_test, y_test, weights);
 
+    
     // Printing the results
     cout << "\nThe original labels: ";
     vec_print(y_test);
     cout << "\nThe predicted labels: ";
     vec_print(final_prediction);
     cout << "\n";
+    
 
     // Printing the accuracy
-    acc_calc(final_prediction, y_test);
+    cout << "\n" << "The accuracy of the model: " << acc_calc(final_prediction, y_test) << " %\n";
     
 
     // Writing the vector into a txt file 
@@ -102,4 +121,15 @@ int main()
 
     // Printing the elapsed time in microseconds
     cout << "Required time for the model: " << chrono::duration_cast<chrono::microseconds> (end-begin).count()/1000 << " ms" << "\n";
+
+    /*
+    cout << "\n";
+    vec_print(current_train_acc);
+
+    cout << "\n";
+    vec_print(current_test_acc);
+
+    cout << "\n";
+    vec_print(cost_vec);
+    */
 }

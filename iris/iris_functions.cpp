@@ -229,7 +229,7 @@ vector<double> model(const vector <double> &a, const vector <double> &b, const v
 // Input 8: learning rate
 // Output: recalculated weights
 
-vector<double> multiclass_perceptron(const vector <double> &a, const vector <double> &b, const vector <double> &c, const vector <double> &d, const vector <int> &y, vector<double> &weights, double alpha)
+vector<int> multiclass_perceptron(const vector <double> &a, const vector <double> &b, const vector <double> &c, const vector <double> &d, const vector <int> &y, vector<double> &weights, double alpha, vector<double> &cost_vec, int current_epoch)
 {
     // Getting the results of the dot product
     vector<double> all_evals = model(a, b, c, d, y, weights);
@@ -237,6 +237,9 @@ vector<double> multiclass_perceptron(const vector <double> &a, const vector <dou
     // Declaring some variables
     vector<double> temp;
     int64_t index;
+    vector<int> predicted_indices(a.size());
+    double cost = 0;
+    double cost_temp = 0;
 
     // Iterating through the data
     // Updating the weights
@@ -246,6 +249,10 @@ vector<double> multiclass_perceptron(const vector <double> &a, const vector <dou
         temp = {all_evals[i*3], all_evals[i*3+1], all_evals[i*3+2]};
         auto it = max_element(begin(temp), end(temp));
         index = it - temp.begin();
+        predicted_indices[i] = index;
+
+        //updating the cost value
+        cost += temp[index] - temp[y[i]];
 
         //updating the weights for the predicted indices
         weights[3 + index] -= alpha*a[i];
@@ -260,8 +267,19 @@ vector<double> multiclass_perceptron(const vector <double> &a, const vector <dou
         weights[12 + y[i]] += alpha*d[i];
     }
 
-    // Returning the weights
-    return weights;
+    // Updating the cost value
+    for(int i = 0; i < weights.size(); i++)
+    {
+        cost_temp += weights[i] * weights[i];
+    }
+
+    cost += sqrt(cost_temp)* sqrt(cost_temp) * alpha;
+
+    // Writing the cost value to the cost vector
+    cost_vec[current_epoch] = cost/y.size();
+
+    // Returning the predicted indices
+    return predicted_indices;
 }
 
 
@@ -301,7 +319,7 @@ vector<int> final_pred(const vector <double> &a, const vector <double> &b, const
 // Function for calculating the accuracy of the prediction
 // Input: the prediction vector
 
-void acc_calc(const vector<int> &prediction, const vector<int> &real_y)
+double acc_calc(const vector<int> &prediction, const vector<int> &real_y)
 {
     // Creating vector for the correct and incorrect predictions
     double correct_pred = 0.0;
@@ -318,7 +336,6 @@ void acc_calc(const vector<int> &prediction, const vector<int> &real_y)
     // Calculating the accuracy
     double acc = 100.0*correct_pred/(correct_pred + incorrect_pred);
 
-    // Printing the resulted accuracy
-    cout << "\n" << "The accuracy of the model: " << acc << " %\n";
-
+    // Returning the value
+    return acc;
 }
