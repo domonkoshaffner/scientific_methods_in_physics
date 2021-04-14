@@ -130,7 +130,7 @@ vector<int> test_generator()
 // The input is a vector of the indices of the testing data set
 // The otput is the training data set's indices
 
-vector<int> train_generator(vector<int> &indices_test)
+vector<int> train_generator(const vector<int> &indices_test)
 {
     // Creating array for the indices
     vector<int> indices_train;
@@ -201,7 +201,7 @@ vector<double> weight_generation()
 // Input 6: weights vector
 // Output: x*weight + bias
 
-vector<double> model(vector <double> &a, vector <double> &b, vector <double> &c, vector <double> &d, vector <int> &y, vector<double> &weights)
+vector<double> model(const vector <double> &a, const vector <double> &b, const vector <double> &c, const vector <double> &d, const vector <int> &y, vector<double> &weights)
 {
     // Creating vectors to store the elements
     vector<double> result(a.size()*3);
@@ -229,7 +229,7 @@ vector<double> model(vector <double> &a, vector <double> &b, vector <double> &c,
 // Input 8: learning rate
 // Output: recalculated weights
 
-vector<double> multiclass_perceptron(vector <double> &a, vector <double> &b, vector <double> &c, vector <double> &d, vector <int> &y, vector<double> &weights, double alpha)
+vector<double> multiclass_perceptron(const vector <double> &a, const vector <double> &b, const vector <double> &c, const vector <double> &d, const vector <int> &y, vector<double> &weights, double alpha)
 {
     // Getting the results of the dot product
     vector<double> all_evals = model(a, b, c, d, y, weights);
@@ -273,7 +273,7 @@ vector<double> multiclass_perceptron(vector <double> &a, vector <double> &b, vec
 // Input 6: weights vector
 // Output: predicted labels
 
-vector<int> final_pred(vector <double> &a, vector <double> &b, vector <double> &c, vector <double> &d, vector <int> &y, vector<double> &weights)
+vector<int> final_pred(const vector <double> &a, const vector <double> &b, const vector <double> &c, const vector <double> &d, vector <int> &y, vector<double> &weights)
 {
     // Getting the results of the dot product
     vector<double> all_evals = model(a, b, c, d, y, weights);
@@ -301,7 +301,7 @@ vector<int> final_pred(vector <double> &a, vector <double> &b, vector <double> &
 // Function for calculating the accuracy of the prediction
 // Input: the prediction vector
 
-void acc_calc(vector<int> &prediction, vector<int> &real_y)
+void acc_calc(const vector<int> &prediction, const vector<int> &real_y)
 {
     // Creating vector for the correct and incorrect predictions
     double correct_pred = 0.0;

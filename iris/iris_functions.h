@@ -19,7 +19,7 @@ using namespace std;
 // Output is the split data set
 
 template <class T>
-vector<T> data_split(vector<T> &data, vector<int> &indices)
+vector<T> data_split(const vector<T> &data, const vector<int> &indices)
 {
     // Creating the new vector
     vector<T> split_data(indices.size());
@@ -37,7 +37,7 @@ vector<T> data_split(vector<T> &data, vector<int> &indices)
 // Input is the vector to be printed
 
 template <class T>
-void vec_print(vector<T> &data)
+void vec_print(const vector<T> &data)
 {
     for(int i = 0; i < data.size(); i++)
     {cout << data[i] << ", ";}
@@ -57,21 +57,21 @@ vector<int> reading_iris_y(string input);
 vector<int> test_generator();
 
 // Function for generating the training data set
-vector<int> train_generator(vector<int> &indices_test);
+vector<int> train_generator(const vector<int> &indices_test);
 
 // Function for generating random weight matrix
 vector<double> weight_generation();
 
 // Function for the dot product of the weights and features
-vector<double> model(vector <double> &a, vector <double> &b, vector <double> &c, vector <double> &d, vector <int> &y, vector<double> &weights);
+vector<double> model(const vector <double> &a, const vector <double> &b, const vector <double> &c, const vector <double> &d, const vector <int> &y, vector<double> &weights);
 
 // Multiclass perceptron function
-vector<double> multiclass_perceptron(vector <double> &a, vector <double> &b, vector <double> &c, vector <double> &d, vector <int> &y, vector<double> &weights, double alpha);
+vector<double> multiclass_perceptron(const vector <double> &a, const vector <double> &b, const vector <double> &c, const vector <double> &d, const vector <int> &y, vector<double> &weights, double alpha);
 
 // Function for calculating the final prediction
-vector<int> final_pred(vector <double> &a, vector <double> &b, vector <double> &c, vector <double> &d, vector <int> &y, vector<double> &weights);
+vector<int> final_pred(const vector <double> &a, const vector <double> &b, const vector <double> &c, const vector <double> &d, vector <int> &y, vector<double> &weights);
 
 // Function for calculating the accuracy of the prediction
-void acc_calc(vector<int> &prediction, vector<int> &real_y);
+void acc_calc(const vector<int> &prediction, const vector<int> &real_y);
 
 #endif /* IRIS_FUNCTIONS_H */
