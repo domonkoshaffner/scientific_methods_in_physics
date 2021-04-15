@@ -39,8 +39,8 @@ vector<T> data_split(const vector<T> &data, const vector<int> &indices)
 template <class T>
 void vec_print(const vector<T> &data)
 {
-    for(int i = 0; i < data.size(); i++)
-    {cout << data[i] << ", ";}
+    for(vector<T>::const_iterator i = data.begin(); i != data.end(); ++i)
+    {cout << *i << ", ";}
 }
 
 //###############################
